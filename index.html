@@ -177,7 +177,7 @@
     <div class="sec" style="margin-bottom:8px">
       <span class="adv-toggle" id="adv-btn">⚙ Advanced options</span>
       <div class="adv" id="adv-panel">
-        <label class="switch on" id="sw-ibo" style="margin-bottom:14px"><span class="track"></span><span>Include IBO Pro Player bonus licenses</span></label>
+        <label class="switch" id="sw-ibo" style="margin-bottom:14px"><span class="track"></span><span>Include IBO Pro Player bonus licenses</span></label>
         <div class="field">
           <label>Server URL — Host 2 (Smarters Pro)</label>
           <input id="f-host2" value="http://smart-d24k.live:80">
@@ -232,7 +232,7 @@ const SERVERS = {
 const state = {
   brand:'norway',
   server:'premium', dur:12, acc:3, type:'new',
-  ibo:true,
+  ibo:false,
   links:['','',''],          // raw pasted links per account
   host2:'http://smart-d24k.live:80',
   app:'Dream 4K', code:'1560525',
@@ -321,7 +321,9 @@ function bindCards(gridId, key, cast){
         document.getElementById('f-code').value=s.code;
       }
       if(key==='acc'){ renderM3UZone(); }
-      if(key==='dur'){ const on = state.dur===12; setSwitch('sw-ibo',on); state.ibo=on; }
+      // IBO bonus default: Premium 12-month only. Lite never gets it (any duration),
+      // and shorter Premium durations stay off. Manual toggle in Advanced still wins after this.
+      applyDefaultIbo();
       regen();
     });
   });
@@ -337,6 +339,10 @@ document.getElementById('adv-btn').addEventListener('click', ()=>{
   document.getElementById('adv-panel').classList.toggle('open');
 });
 function setSwitch(id,on){ const el=document.getElementById(id); el.classList.toggle('on',on); }
+// IBO bonus ships by default only on Premium 12-month orders.
+// Lite is excluded at every duration, including 12 months.
+function defaultIbo(){ return state.server==='premium' && state.dur===12; }
+function applyDefaultIbo(){ state.ibo = defaultIbo(); setSwitch('sw-ibo', state.ibo); }
 document.getElementById('sw-ibo').addEventListener('click', ()=>{
   state.ibo=!state.ibo; setSwitch('sw-ibo',state.ibo); regen();
 });
@@ -564,6 +570,7 @@ document.getElementById('copy-btn').addEventListener('click', async ()=>{
 
 /* init */
 renderM3UZone();
+applyDefaultIbo();
 regen();
 </script>
 </body>
